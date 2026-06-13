@@ -1,7 +1,7 @@
 const { Server } = require("socket.io");
 const { generateReasoningStream } = require("../services/ai.service.js");
-const ChatSession = require("../models/ChatSession");
-const Message = require("../models/Message");
+const ChatSession = require("../models/chatSession.model.js");
+const Message = require("../models/message.model.js");
 
 async function initSocket(httpServer) {
     const io = new Server(httpServer, {
