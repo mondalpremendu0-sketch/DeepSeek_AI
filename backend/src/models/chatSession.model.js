@@ -18,6 +18,6 @@ const ChatSessionSchema = new mongoose.Schema({
 
 ChatSessionSchema.index({ userId: 1, updatedAt: -1 });
 
-const ChatSessionModel = mongoose.model('ChatSession', ChatSessionSchema);
+const chatSessionModel = mongoose.model('ChatSession', ChatSessionSchema);
 
-module.exports = ChatSessionModel;
+module.exports = chatSessionModel;
