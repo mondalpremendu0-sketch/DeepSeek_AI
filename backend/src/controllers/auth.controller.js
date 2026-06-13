@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie-parser");
 const authModel = require("../models/user.model.js");
-const blackListModel = require("../model/blacklist.model.js");
+//const blackListModel = require("../model/blacklist.model.js");
 const AppError = require("../utils/error.utils.js");
 
 async function register_controller(req, res, next) {
@@ -158,7 +158,7 @@ async function logout_controller(req, res, next) {
   
   try {
     const token = req.cookies.token;
-    await blackListModel.create({ token });
+   // await blackListModel.create({ token });
     res.clearCookie("token");
     res.status(200).json({
         success: true,
