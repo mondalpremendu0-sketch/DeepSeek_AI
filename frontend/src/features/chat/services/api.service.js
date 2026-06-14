@@ -11,7 +11,7 @@ const apiClient = axios.create({
  * LAYER 1: AXIOS API SERVICE LAYER
  * Pure data mapping layer. Standardizes response layouts.
  */
-export const createSession = async (userId, title) => {
+const createSession = async (userId, title) => {
     try {
         const response = await apiClient.post("/session", { userId, title });
         return response.data;
@@ -21,7 +21,7 @@ export const createSession = async (userId, title) => {
 };
 
 // GET: Pull all sidebar history lines for a specific user ID
-export const getUserSessions = async userId => {
+const getUserSessions = async userId => {
     try {
         const response = await apiClient.get(`/user/${userId}`);
         return response.data;
@@ -31,7 +31,7 @@ export const getUserSessions = async userId => {
 };
 
 // GET: Pull historical message arrays for an active thread view
-export const getSessionMessages = async sessionId => {
+const getSessionMessages = async sessionId => {
     try {
         const response = await apiClient.get(`/session/${sessionId}`);
         return response.data;
@@ -41,7 +41,7 @@ export const getSessionMessages = async sessionId => {
 };
 
 // DELETE: Trigger an administrative cascading sweep
-export const deleteSession = async sessionId => {
+const deleteSession = async sessionId => {
     try {
         const response = await apiClient.delete(`/session/${sessionId}`);
         return response.data;
@@ -49,3 +49,5 @@ export const deleteSession = async sessionId => {
         console.error("deleteSession Error:", err);
     }
 };
+
+export { createSession, getUserSessions, getSessionMessages, deleteSession };

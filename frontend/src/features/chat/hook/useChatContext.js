@@ -1,8 +1,8 @@
 import { useContext, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import { apiService } from '../services/api.service.js';
+import { createSession, getUserSessions, getSessionMessages, deleteSession } from '../services/api.service.js';
 import socketService from '../services/socket.service.js';
-import {ChatContext}  from '../chat.context.js';
+import {ChatContext}  from '../chat.context.jsx';
 
 export const useChatEngine  = () => {
   
@@ -39,7 +39,7 @@ export const useChatEngine  = () => {
    */
   const loadSidebarData = useCallback(async () => {
     try {
-      const res = await apiService.getUserSessions(userId);
+      const res = await getUserSessions(userId);
       if (res.success) {
         setSessions(res.data);
       }
@@ -51,12 +51,12 @@ export const useChatEngine  = () => {
   /**
    * Action: Syncs the URL param with context and loads existing conversation records.
    */
-  useEffect(() => {
+  useEffect(async () => {
     setCurrentSessionId(sessionId || null);
 
     if (sessionId) {
       // If switching into a valid conversation route, download its message thread
-      apiService.getSessionMessages(sessionId)
+      await getSessionMessages(sessionId)
         .then((res) => {
           if (res.success) {
             setMessages(res.data);
@@ -133,7 +133,7 @@ export const useChatEngine  = () => {
    */
   const createNewWorkspace = async () => {
     try {
-      const res = await apiService.createSession(userId, 'New Conversation');
+      const res = await createSession(userId, 'New Conversation');
       if (res.success) {
         await loadSidebarData(); // Instantly update sidebar mapping array
         navigate(`/chat/${res.data._id}`); // Adjust the URL path seamlessly via React Router
@@ -148,7 +148,7 @@ export const useChatEngine  = () => {
    */
   const purgeWorkspace = async (targetSessionId) => {
     try {
-      const res = await apiService.deleteSession(targetSessionId);
+      const res = await deleteSession(targetSessionId);
       if (res.success) {
         await loadSidebarData(); // Re-index the sidebar collection array
         

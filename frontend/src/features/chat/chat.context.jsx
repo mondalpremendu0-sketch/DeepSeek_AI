@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext } from 'react';
 
-const ChatContext = createContext();
+export const ChatContext = createContext();
 
 /**
  * LAYER 3: CONTEXT PROVIDER LAYER

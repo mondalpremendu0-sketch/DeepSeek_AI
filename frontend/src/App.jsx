@@ -1,11 +1,13 @@
-import { router } from "./app.routes.js";
-import ChatProvider from "./features/chat/chat.context.js";
+import { RouterProvider } from "react-router/dom";
+import { router } from "./app.routes.jsx";
+import ChatProvider from "./features/chat/chat.context.jsx";
 
 function App() {
-    return;
+    return(
     <ChatProvider>
         <RouterProvider router={router} />;
-    </ChatProvider>;
+    </ChatProvider>
+    )
 }
 
 export default App;
