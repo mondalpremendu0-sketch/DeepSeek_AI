@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { apiService } from '../services/api.service.js';
-//import socketService from '../services/socket.service';
+import socketService from '../services/socket.service.js';
 import {ChatContext}  from '../chat.context.js';
 
 export const useChatEngine  = () => {
