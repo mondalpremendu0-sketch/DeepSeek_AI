@@ -1,5 +1,5 @@
 import { router } from "./app.routes.js";
-import ChatProvider from "./app.routes.js";
+import ChatProvider from "./features/chat/chat.context.js";
 
 function App() {
     return;
