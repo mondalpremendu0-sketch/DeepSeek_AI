@@ -5,7 +5,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 /**
  * Service: Generates a high-speed text stream from Google Gemini
  * @param {Array} messages - Chronological message array from client
- * @returns {Promise<AsyncIterable>} - Returns an async iterable text stream
+ * @returns {Promise<AsyncIterable>} - Returns an async iterable text stream response
  */
 async function generateReasoningStream(messages) {
     if (!messages || !Array.isArray(messages)) {
@@ -29,7 +29,8 @@ async function generateReasoningStream(messages) {
         }
     });
 
-    return response.text;
+    // FIXED: Return the full iterable response wrapper container, not response.text
+    return response;
 }
 
 module.exports = {

@@ -22,7 +22,7 @@ export default function Home() {
 
   return (
     // FIXED: Swapped 'flex' for 'fixed inset-0' to lock the app edges to the screen borders, destroying whitespace leaks
-    <div className="fixed inset-0 bg-slate-950 text-slate-100 font-sans flex overflow-hidden antialiased select-none">
+    <div className="fixed inset-0 h-[100dvh] w-screen bg-slate-950 text-slate-100 font-sans flex overflow-hidden antialiased select-none">
       
       {/* Sidebar navigation element component */}
       <Sidebar 
