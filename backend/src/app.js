@@ -10,8 +10,8 @@ const app = express();
 
 
 app.use(express.json());
-app.use("/api/v1",chatRouter);
 app.use("/api/v1/user",authRouter);
+app.use("/api/v1",chatRouter);
 
 
 
