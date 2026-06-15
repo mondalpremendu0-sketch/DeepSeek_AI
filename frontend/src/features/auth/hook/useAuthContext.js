@@ -26,12 +26,29 @@ export const useAuthContext = () => {
       const data = await login({email, password});
       setUser(data.user);
     } catch (err) {
-      console.error('handleRegister Error:', err);
+      console.error('handleLogin Error:', err);
       
     }
      finally {
       setLoading(false)
     }
   }
+  
+  const handleLogout = async () => {
+    try {
+      setLoading(true)
+      const data = await getProfile();
+      setUser(null);
+    } catch (err) {
+      console.error('handleLogout Error:', err);
+      
+    }
+     finally {
+      setLoading(false)
+    }
+  }
+  
+  
+  
   
 }
