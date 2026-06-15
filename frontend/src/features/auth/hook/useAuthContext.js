@@ -20,4 +20,18 @@ export const useAuthContext = () => {
     }
   }
   
+  const handleLogin = async ({email, password}) => {
+    try {
+      setLoading(true);
+      const data = await login({email, password});
+      setUser(data.user);
+    } catch (err) {
+      console.error('handleRegister Error:', err);
+      
+    }
+     finally {
+      setLoading(false)
+    }
+  }
+  
 }
