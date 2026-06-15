@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post("/register",authController.register_controller)
 router.post("/login",authController.login_controller)
-router.get("/getMe",authController.getMe_controller)
+router.get("/getprofile",authController.getMe_controller)
 router.get("/logout",authController.logout_controller)
 
 module.exports = router;

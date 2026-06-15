@@ -9,7 +9,7 @@ const apiClient = axios.create({
 
 const register = async ({ firstname, lastname, email, password }) => {
     try {
-        const response = await apiClient.post("/login", {
+        const response = await apiClient.post("/register", {
             firstname,
             lastname,
             email,
@@ -20,14 +20,24 @@ const register = async ({ firstname, lastname, email, password }) => {
         console.error("register Error:", err);
     }
 };
+
 const login = async ({ email, password }) => {
     try {
-        const response = await apiClient.post("/register", {
+        const response = await apiClient.post("/login", {
             email,
             password
         });
         return response.data;
     } catch (err) {
-        console.error("register Error:", err);
+        console.error("login Error:", err);
+    }
+};
+
+const getProfile = async ({ email, password }) => {
+    try {
+        const response = await apiClient.get("/getProfile");
+        return response.data;
+    } catch (err) {
+        console.error("getProfile Error:", err);
     }
 };
