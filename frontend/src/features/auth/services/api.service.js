@@ -50,3 +50,5 @@ const logout = async () => {
         console.error("logout Error:", err);
     }
 };
+
+export { register, login, getProfile, logout };
