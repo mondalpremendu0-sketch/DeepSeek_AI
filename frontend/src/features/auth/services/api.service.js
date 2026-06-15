@@ -33,11 +33,20 @@ const login = async ({ email, password }) => {
     }
 };
 
-const getProfile = async ({ email, password }) => {
+const getProfile = async () => {
     try {
         const response = await apiClient.get("/getProfile");
         return response.data;
     } catch (err) {
         console.error("getProfile Error:", err);
+    }
+};
+
+const logout = async () => {
+    try {
+        const response = await apiClient.get("/logout");
+        return response.data;
+    } catch (err) {
+        console.error("logout Error:", err);
     }
 };
