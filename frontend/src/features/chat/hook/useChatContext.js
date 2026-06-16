@@ -83,68 +83,100 @@ export const useChatEngine = () => {
   /**
    * Action: Orchestrates the real-time Socket.io state machine and event channels.
    */
-  useEffect(() => {
-    loadSidebarData(); 
+  // Inside src/hooks/useChatEngine.js
 
-    const socket = socketService.connect();
-    socketRef.current = socket;
+useEffect(() => {
+  loadSidebarData(); 
 
-    socket.on('thinking_chunk', (chunk) => {
-      setLiveThinking((prev) => prev + chunk);
-    });
+  const socket = socketService.connect();
+  socketRef.current = socket;
 
-    socket.on('answer_chunk', (chunk) => {
-      setLiveAnswer((prev) => prev + chunk);
-    });
+  // INTERNAL STREAM BUFFERING QUEUES
+  const answerQueue = [];
+  let throttleInterval = null;
 
-    // FIXED: Patched data targets and substituted named functions correctly to stop state drops
-    socket.on('stream_done', () => {
-      setIsGenerating(false);
+  // Function to smoothly drain text out of the queue array into React state
+  const startThrottlingEngine = () => {
+    if (throttleInterval) return; // Already running
 
-      const finalAnswer = liveAnswerRef.current;
-      const finalThinking = liveThinkingRef.current;
-
-      if (sessionId) {
-        // Option A: Active Session exists -> Re-fetch complete array directly from DB
-        getSessionMessages(sessionId)
-          .then((res) => {
-            if (res.success) setMessages(res.data);
-          })
-          .catch((err) => console.error('❌ Async message sync crash:', err.message))
-          .finally(() => {
-            setLiveThinking('');
-            setLiveAnswer('');
-          });
+    throttleInterval = setInterval(() => {
+      if (answerQueue.length > 0) {
+        const nextCharOrWord = answerQueue.shift();
+        setLiveAnswer((prev) => prev + nextCharOrWord);
       } else {
-        // Option B: First message loop turn -> Explicitly write current state history cache locally 
-        // before clearing temporary string buffers so it never disappears from the screen!
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: 'assistant',
-            content: finalAnswer,
-            reasoningContent: finalThinking
-          }
-        ]);
-        
-        setLiveThinking('');
-        setLiveAnswer('');
-        loadSidebarData(); // Instantly fetch the newly auto-generated session item into the sidebar
+        // If queue empties, pause the interval loop temporarily
+        clearInterval(throttleInterval);
+        throttleInterval = null;
       }
-    });
+    }, 25); // 25ms per token output gives an incredibly smooth, natural reading speed
+  };
 
-    socket.on('stream_error', (err) => {
-      console.error('❌ Core socket line exception caught:', err.message);
-      setIsGenerating(false);
-    });
+  // A. Listen for incoming live analytical reasoning streams (Rendered instantly)
+  socket.on('thinking_chunk', (chunk) => {
+    setLiveThinking((prev) => prev + chunk);
+  });
 
-    return () => {
-      socket.off('thinking_chunk');
-      socket.off('answer_chunk');
-      socket.off('stream_done');
-      socket.off('stream_error');
-    };
-  }, [loadSidebarData, sessionId, setLiveThinking, setLiveAnswer, setIsGenerating, setMessages]);
+  // B. FIXED: Push text chunks into the queue buffer instead of updating state instantly
+  socket.on('answer_chunk', (chunk) => {
+    // Split by character (or words) to feed the typewriter animation engine evenly
+    const characters = Array.from(chunk);
+    answerQueue.push(...characters);
+    startThrottlingEngine();
+  });
+
+  // C. Completion signal handler
+  socket.on('stream_done', () => {
+    // Wait for the remaining items in the display buffer to clear out completely
+    const drainCheckInterval = setInterval(() => {
+      if (answerQueue.length === 0) {
+        clearInterval(drainCheckInterval);
+        if (throttleInterval) clearInterval(throttleInterval);
+        
+        setIsGenerating(false);
+        const finalAnswer = liveAnswerRef.current;
+        const finalThinking = liveThinkingRef.current;
+
+        if (sessionId) {
+          getSessionMessages(sessionId)
+            .then((res) => {
+              if (res.success) setMessages(res.data);
+            })
+            .catch((err) => console.error('❌ Post-Stream sync error:', err.message))
+            .finally(() => {
+              setLiveThinking('');
+              setLiveAnswer('');
+            });
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              content: finalAnswer,
+              reasoningContent: finalThinking
+            }
+          ]);
+          setLiveThinking('');
+          setLiveAnswer('');
+          loadSidebarData();
+        }
+      }
+    }, 100);
+  });
+
+  socket.on('stream_error', (err) => {
+    console.error('❌ Socket line error:', err.message);
+    setIsGenerating(false);
+    if (throttleInterval) clearInterval(throttleInterval);
+  });
+
+  return () => {
+    socket.off('thinking_chunk');
+    socket.off('answer_chunk');
+    socket.off('stream_done');
+    socket.off('stream_error');
+    if (throttleInterval) clearInterval(throttleInterval);
+  };
+}, [loadSidebarData, sessionId, setLiveThinking, setLiveAnswer, setIsGenerating, setMessages]);
 
   /**
    * Action: Creates an empty conversation workspace node and pushes the router forward.

@@ -28,7 +28,7 @@ export default function LoginPage() {
   // Handle payload submission pass
   const onLoginSubmit = async (data) => {
     try {
-      console.log('📡 Verifying operator token sequence:', data);
+      //console.log('📡 Verifying operator token sequence:', data);
       
       // Simulate network response authentication delay
       await handleLogin(data)
