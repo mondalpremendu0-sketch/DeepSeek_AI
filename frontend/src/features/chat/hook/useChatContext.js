@@ -1,9 +1,13 @@
 // src/hooks/useChatEngine.js
 import { useContext, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate } from 'react-router-dom';
 import { createSession, getUserSessions, getSessionMessages, deleteSession } from '../services/api.service.js';
 import socketService from '../services/socket.service.js';
 import { ChatContext } from '../chat.context.jsx';
+
+// GLOBAL STREAM BUFFERING QUEUES (Isolated from React lifecycle state drops)
+const answerQueue = [];
+let throttleInterval = null;
 
 export const useChatEngine = () => {
   const context = useContext(ChatContext);
@@ -26,13 +30,13 @@ export const useChatEngine = () => {
   const navigate = useNavigate();
   const socketRef = useRef(null);
 
-  // Use mutable refs to track live streams across async socket closures instantly
+  // Persistent references to prevent closure lag stale values inside socket listeners
   const liveThinkingRef = useRef('');
   const liveAnswerRef = useRef('');
 
   const userId = '65f1a2b3c4d5e6f7a8b9c0d1';
 
-  // Continuously map current context string states into mutable reference pointers
+  // Keep references continuously in sync with current context state
   useEffect(() => {
     liveThinkingRef.current = liveThinking;
   }, [liveThinking]);
@@ -57,7 +61,6 @@ export const useChatEngine = () => {
 
   /**
    * Action: Syncs the URL param with context and loads existing conversation records.
-   * FIXED: Replaced async hook layout with an internal self-invoking function execution block.
    */
   useEffect(() => {
     setCurrentSessionId(sessionId || null);
@@ -81,101 +84,130 @@ export const useChatEngine = () => {
   }, [sessionId, setCurrentSessionId, setMessages]);
 
   /**
-   * Action: Orchestrates the real-time Socket.io state machine and event channels.
+   * Action: Isolated Sidebar Refresh Sequence
    */
-  // Inside src/hooks/useChatEngine.js
-
-useEffect(() => {
-  loadSidebarData(); 
-
-  const socket = socketService.connect();
-  socketRef.current = socket;
-
-  // INTERNAL STREAM BUFFERING QUEUES
-  const answerQueue = [];
-  let throttleInterval = null;
-
-  // Function to smoothly drain text out of the queue array into React state
-  const startThrottlingEngine = () => {
-    if (throttleInterval) return; // Already running
-
-    throttleInterval = setInterval(() => {
-      if (answerQueue.length > 0) {
-        const nextCharOrWord = answerQueue.shift();
-        setLiveAnswer((prev) => prev + nextCharOrWord);
-      } else {
-        // If queue empties, pause the interval loop temporarily
-        clearInterval(throttleInterval);
-        throttleInterval = null;
-      }
-    }, 25); // 25ms per token output gives an incredibly smooth, natural reading speed
-  };
-
-  // A. Listen for incoming live analytical reasoning streams (Rendered instantly)
-  socket.on('thinking_chunk', (chunk) => {
-    setLiveThinking((prev) => prev + chunk);
-  });
-
-  // B. FIXED: Push text chunks into the queue buffer instead of updating state instantly
-  socket.on('answer_chunk', (chunk) => {
-    // Split by character (or words) to feed the typewriter animation engine evenly
-    const characters = Array.from(chunk);
-    answerQueue.push(...characters);
-    startThrottlingEngine();
-  });
-
-  // C. Completion signal handler
-  // Inside src/hooks/useChatEngine.js inside the main socket useEffect:
-
-socket.on('stream_done', () => {
-  // 1. Establish a loop checker to wait until the character typing queue has fully emptied out on screen
-  const checkQueueDrained = setInterval(() => {
-    if (answerQueue.length === 0) {
-      clearInterval(checkQueueDrained);
-      if (throttleInterval) {
-        clearInterval(throttleInterval);
-        throttleInterval = null;
-      }
-
-      setIsGenerating(false);
-
-      // 2. Clear out the streaming state buffers FIRST before syncing background records
-      // This immediately stops the UI from duplicating data or jumping text blocks
-      setLiveThinking('');
-      setLiveAnswer('');
-
-      if (sessionId) {
-        // If the session exists, pull down the official MongoDB message list container array
-        getSessionMessages(sessionId)
-          .then((res) => {
-            if (res.success) setMessages(res.data);
-          })
-          .catch((err) => console.error('❌ Database history alignment crash:', err.message));
-      } else {
-        // If it's a completely new workspace loop turn, reload sidebar listings data
-        loadSidebarData();
-      }
-    }
-  }, 50);
-});
-
-  socket.on('stream_error', (err) => {
-    console.error('❌ Socket line error:', err.message);
-    setIsGenerating(false);
-    if (throttleInterval) clearInterval(throttleInterval);
-  });
-
-  return () => {
-    socket.off('thinking_chunk');
-    socket.off('answer_chunk');
-    socket.off('stream_done');
-    socket.off('stream_error');
-    if (throttleInterval) clearInterval(throttleInterval);
-  };
-}, [loadSidebarData, sessionId, setLiveThinking, setLiveAnswer, setIsGenerating, setMessages]);
+  useEffect(() => {
+    loadSidebarData();
+  }, [sessionId, loadSidebarData]);
 
   /**
-   * Action: Creates an empty conversation workspace node and pushes the router forward.
+   * Action: Orchestrates the real-time Socket.io state machine channel.
+   * Locked to connect securely without dropouts or token fading.
+   */
+  useEffect(() => {
+    const socket = socketService.connect();
+    socketRef.current = socket;
+
+    const startThrottlingEngine = () => {
+      if (throttleInterval) return;
+
+      throttleInterval = setInterval(() => {
+        if (answerQueue.length > 0) {
+          const nextToken = answerQueue.shift();
+          setLiveAnswer((prev) => prev + nextToken);
+        } else {
+          clearInterval(throttleInterval);
+          throttleInterval = null;
+        }
+      }, 15); // Ultra-smooth 15ms typing pacing flow rate
+    };
+
+    socket.on('thinking_chunk', (chunk) => {
+      setLiveThinking((prev) => prev + chunk);
+    });
+
+    socket.on('answer_chunk', (chunk) => {
+      // Split incoming chunks cleanly to stream text continuously
+      const characters = Array.from(chunk);
+      answerQueue.push(...characters);
+      startThrottlingEngine();
+    });
+
+    socket.on('stream_done', () => {
+      // Wait for the client text pacing queue to flush completely to screen
+      const verifyQueueCleared = setInterval(() => {
+        if (answerQueue.length === 0) {
+          clearInterval(verifyQueueCleared);
+          if (throttleInterval) {
+            clearInterval(throttleInterval);
+            throttleInterval = null;
+          }
+
+          setIsGenerating(false);
+
+          const completedAnswer = liveAnswerRef.current;
+          const completedThinking = liveThinkingRef.current;
+
+          // Clear temporary streaming strings completely before history synchronization
+          setLiveThinking('');
+          setLiveAnswer('');
+
+          if (sessionId) {
+            // Re-fetch historical log array directly from server data source
+            getSessionMessages(sessionId)
+              .then((res) => {
+                if (res.success) setMessages(res.data);
+              })
+              .catch((err) => console.error('❌ Async timeline recovery crash:', err.message));
+          } else {
+            // Append first message locally to hold screen space layout during session redirects
+            setMessages([
+              {
+                role: 'user',
+                content: optimisticPromptRef.current || ''
+              },
+              {
+                role: 'assistant',
+                content: completedAnswer,
+                reasoningContent: completedThinking
+              }
+            ]);
+            loadSidebarData();
+          }
+        }
+      }, 50);
+    });
+
+    socket.on('stream_error', (err) => {
+      console.error('❌ Core socket exception:', err.message);
+      setIsGenerating(false);
+      if (throttleInterval) clearInterval(throttleInterval);
+    });
+
+    return () => {
+      socket.off('thinking_chunk');
+      socket.off('answer_chunk');
+      socket.off('stream_done');
+      socket.off('stream_error');
+    };
+  }, [sessionId, loadSidebarData, setLiveThinking, setLiveAnswer, setIsGenerating, setMessages]);
+
+  // Track the initial query to prevent first-turn vanishing states
+  const optimisticPromptRef = useRef('');
+
+  /**
+   * Action: Optimistically updates the UI timeline and dispatches payloads over WebSockets.
+   */
+  const dispatchPrompt = (promptText) => {
+    if (!promptText.trim() || isGenerating) return;
+
+    setLiveThinking('');
+    setLiveAnswer('');
+    setIsGenerating(true);
+    optimisticPromptRef.current = promptText;
+
+    const newUserMessageObject = { role: 'user', content: promptText };
+    const optimisticMessageTimeline = [...messages, newUserMessageObject];
+    setMessages(optimisticMessageTimeline);
+
+    socketRef.current.emit('sendMessage', {
+      sessionId: sessionId || null,
+      messages: optimisticMessageTimeline
+    });
+  };
+
+  /**
+   * Action: Creates an empty conversation workspace node.
    */
   const createNewWorkspace = async () => {
     try {
@@ -204,26 +236,6 @@ socket.on('stream_done', () => {
     } catch (err) {
       console.error('❌ Hook Layer Error [purgeWorkspace]:', err.message);
     }
-  };
-
-  /**
-   * Action: Optimistically updates the UI timeline and dispatches payloads over WebSockets.
-   */
-  const dispatchPrompt = (promptText) => {
-    if (!promptText.trim() || isGenerating) return;
-
-    setLiveThinking('');
-    setLiveAnswer('');
-    setIsGenerating(true);
-
-    const newUserMessageObject = { role: 'user', content: promptText };
-    const optimisticMessageTimeline = [...messages, newUserMessageObject];
-    setMessages(optimisticMessageTimeline);
-
-    socketRef.current.emit('sendMessage', {
-      sessionId: sessionId || null,
-      messages: optimisticMessageTimeline
-    });
   };
 
   return {
