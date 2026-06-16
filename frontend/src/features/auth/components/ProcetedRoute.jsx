@@ -1,4 +1,4 @@
-import {Navigate,Outlet} from 'react-router'
+import {Navigate} from 'react-router'
 import {useAuthContext} from '../hook/useAuthContext.js'
 
 
@@ -10,5 +10,4 @@ export default function Protected() {
         return <Navigate to={"/register"} replace/>;
     }
     
-  return <Outlet />;
 }

@@ -1,5 +1,5 @@
 // src/pages/RegisterPage.jsx
-import React from 'react';
+import React,{useEffect} from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { Cpu, User, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
@@ -13,13 +13,20 @@ import {useAuthContext} from '../hook/useAuthContext.js'
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const {handleRegister} = useAuthContext();
+  const {handleRegister,user} = useAuthContext();
+  
   // Initialize react-hook-form with strict validation mode configuration
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting }
   } = useForm({ mode: 'onChange' });
+  
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  },[user,navigate])
 
   // Handle payload submission pass
   const onRegistrationSubmit = async (data) => {
