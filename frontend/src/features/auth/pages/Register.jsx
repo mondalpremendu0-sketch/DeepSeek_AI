@@ -170,7 +170,7 @@ export default function RegisterPage() {
           <p className="text-xs text-slate-500">
             Already have an active terminal?{' '}
             <button 
-              onClick={() => navigate('/')} 
+              onClick={() => navigate('/login')} 
               className="text-blue-400 hover:text-blue-300 font-medium outline-none underline decoration-blue-500/20 underline-offset-4"
             >
               Sign In

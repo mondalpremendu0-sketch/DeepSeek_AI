@@ -1,18 +1,29 @@
 // src/pages/LoginPage.jsx
-import React from 'react';
+import React,{useEffect} from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { Cpu, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
 
+import {useAuthContext} from '../hook/useAuthContext.js'
+
+
+
+
 export default function LoginPage() {
   const navigate = useNavigate();
-  
+  const {handleLogin,user} = useAuthContext();
   // Initialize react-hook-form validation hooks
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting }
   } = useForm({ mode: 'onChange' });
+  
+  useEffect(() => {
+    if (user) {
+      return navigate("/")
+    }
+  },[user,navigate])
 
   // Handle payload submission pass
   const onLoginSubmit = async (data) => {
@@ -20,10 +31,11 @@ export default function LoginPage() {
       console.log('📡 Verifying operator token sequence:', data);
       
       // Simulate network response authentication delay
+      await handleLogin(data)
       await new Promise((resolve) => setTimeout(resolve, 1000));
       
       // Route the authorized user straight into the core dashboard sandbox
-      navigate('/');
+      navigate("/");
     } catch (err) {
       console.error('❌ Authentication handshake failed:', err.message);
     }
