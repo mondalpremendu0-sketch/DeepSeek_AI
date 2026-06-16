@@ -125,43 +125,39 @@ useEffect(() => {
   });
 
   // C. Completion signal handler
-  socket.on('stream_done', () => {
-    // Wait for the remaining items in the display buffer to clear out completely
-    const drainCheckInterval = setInterval(() => {
-      if (answerQueue.length === 0) {
-        clearInterval(drainCheckInterval);
-        if (throttleInterval) clearInterval(throttleInterval);
-        
-        setIsGenerating(false);
-        const finalAnswer = liveAnswerRef.current;
-        const finalThinking = liveThinkingRef.current;
+  // Inside src/hooks/useChatEngine.js inside the main socket useEffect:
 
-        if (sessionId) {
-          getSessionMessages(sessionId)
-            .then((res) => {
-              if (res.success) setMessages(res.data);
-            })
-            .catch((err) => console.error('❌ Post-Stream sync error:', err.message))
-            .finally(() => {
-              setLiveThinking('');
-              setLiveAnswer('');
-            });
-        } else {
-          setMessages((prev) => [
-            ...prev,
-            {
-              role: 'assistant',
-              content: finalAnswer,
-              reasoningContent: finalThinking
-            }
-          ]);
-          setLiveThinking('');
-          setLiveAnswer('');
-          loadSidebarData();
-        }
+socket.on('stream_done', () => {
+  // 1. Establish a loop checker to wait until the character typing queue has fully emptied out on screen
+  const checkQueueDrained = setInterval(() => {
+    if (answerQueue.length === 0) {
+      clearInterval(checkQueueDrained);
+      if (throttleInterval) {
+        clearInterval(throttleInterval);
+        throttleInterval = null;
       }
-    }, 100);
-  });
+
+      setIsGenerating(false);
+
+      // 2. Clear out the streaming state buffers FIRST before syncing background records
+      // This immediately stops the UI from duplicating data or jumping text blocks
+      setLiveThinking('');
+      setLiveAnswer('');
+
+      if (sessionId) {
+        // If the session exists, pull down the official MongoDB message list container array
+        getSessionMessages(sessionId)
+          .then((res) => {
+            if (res.success) setMessages(res.data);
+          })
+          .catch((err) => console.error('❌ Database history alignment crash:', err.message));
+      } else {
+        // If it's a completely new workspace loop turn, reload sidebar listings data
+        loadSidebarData();
+      }
+    }
+  }, 50);
+});
 
   socket.on('stream_error', (err) => {
     console.error('❌ Socket line error:', err.message);
