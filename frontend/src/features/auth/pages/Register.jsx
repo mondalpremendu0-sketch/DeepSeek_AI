@@ -25,8 +25,9 @@ export default function RegisterPage() {
   const onRegistrationSubmit = async (data) => {
     try {
       console.log('📡 Dispatching user payload sequence:', data);
-      await handleRegister(data);
+      
       // Simulate API network pipeline processing delay
+      await handleRegister(data);
       await new Promise((resolve) => setTimeout(resolve, 1200));
       
       // Navigate straight into the main chat workspace sandbox upon success

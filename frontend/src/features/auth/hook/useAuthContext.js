@@ -3,7 +3,6 @@ import { AuthContext } from "../auth.context.jsx";
 import {
     register,
     login,
-    getProfile,
     logout
 } from "../services/api.service.js";
 

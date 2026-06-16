@@ -20,7 +20,7 @@ export default function AuthProvider({ children }) {
             }
         }
         getUserAndSet();
-    });
+    },[]);
 
     return (
         <AuthContext.Provider value={{ user, setUser, loading, setLoading }}>
