@@ -31,14 +31,14 @@ export default function RegisterPage() {
   // Handle payload submission pass
   const onRegistrationSubmit = async (data) => {
     try {
-      console.log('📡 Dispatching user payload sequence:', data);
+     // console.log('📡 Dispatching user payload sequence:', data);
       
       // Simulate API network pipeline processing delay
       await handleRegister(data);
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+      //await new Promise((resolve) => setTimeout(resolve, 1200));
       
       // Navigate straight into the main chat workspace sandbox upon success
-      navigate('/');
+      navigate("/");
     } catch (err) {
       console.error('❌ Registration processing crash:', err.message);
     }

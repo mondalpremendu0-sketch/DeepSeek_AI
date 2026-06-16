@@ -4,10 +4,20 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <link rel="stylesheet" href="./src/index.css" type="text/css" media="all" />
+    <title>Deepsea</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div className="fixed inset-0 h-[100dvh] w-screen bg-slate-950 flex flex-col justify-center items-center text-center select-none">
+        <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800/80 flex items-center justify-center text-blue-500">
+        </div>
+        <span className="text-[10px] font-mono text-slate-600 tracking-widest uppercase mt-3">
+          Verifying Core Credentials...
+        </span>
+      </div>
+      
+    </div>
     <script type="module" src="/src/main.jsx"></script>
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
         <script>
