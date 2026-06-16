@@ -3,10 +3,17 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { Cpu, User, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
+import {useAuthContext} from '../hook/useAuthContext.js'
+
+
+
+
+
+
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  
+  const {handleRegister} = useAuthContext();
   // Initialize react-hook-form with strict validation mode configuration
   const {
     register,
@@ -18,7 +25,7 @@ export default function RegisterPage() {
   const onRegistrationSubmit = async (data) => {
     try {
       console.log('📡 Dispatching user payload sequence:', data);
-      
+      await handleRegister(data);
       // Simulate API network pipeline processing delay
       await new Promise((resolve) => setTimeout(resolve, 1200));
       
@@ -59,10 +66,30 @@ export default function RegisterPage() {
               <User className="absolute left-3.5 top-3.5 text-slate-600" size={14} />
               <input
                 type="text"
-                placeholder="Enter surname or callsign"
+                placeholder="Enter callsign"
                 className={`${inputStyle} ${errors.name ? 'border-rose-500/50 focus:border-rose-500' : 'border-slate-800 focus:border-slate-700'}`}
-                {...register('name', { required: 'Operator callsign designation is required.' })}
+                {...register('firstname', { required: 'Operator callsign designation is required.' })}
               />
+            
+            </div>
+            {errors.name && (
+              <p className="text-[10px] text-rose-400 flex items-center gap-1 pl-1 pt-0.5 animate-fade-in">
+                <AlertCircle size={10} /> {errors.name.message}
+              </p>
+            )}
+          </div>
+          
+          <div className="space-y-1 relative">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 pl-0.5">Operator SurName</label>
+            <div className="relative">
+              <User className="absolute left-3.5 top-3.5 text-slate-600" size={14} />
+              <input
+                type="text"
+                placeholder="Enter callsign"
+                className={`${inputStyle} ${errors.name ? 'border-rose-500/50 focus:border-rose-500' : 'border-slate-800 focus:border-slate-700'}`}
+                {...register('lastname', { required: 'Operator callsign designation is required.' })}
+              />
+            
             </div>
             {errors.name && (
               <p className="text-[10px] text-rose-400 flex items-center gap-1 pl-1 pt-0.5 animate-fade-in">

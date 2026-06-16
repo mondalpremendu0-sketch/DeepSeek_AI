@@ -1,4 +1,4 @@
-import { useContext, useeffect } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../auth.context.jsx";
 import {
     register,
@@ -52,7 +52,7 @@ export const useAuthContext = () => {
         }
     };
 
-    useeffect(() => {
+    useEffect(() => {
         async function getUserAndSet() {
             try {
                 setLoading(true);
@@ -66,4 +66,8 @@ export const useAuthContext = () => {
         }
         getUserAndSet();
     });
+    
+    return {
+      handleRegister,handleLogin,handleLogout,user,setUser,loading,setLoading
+    }
 };
