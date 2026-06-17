@@ -221,7 +221,7 @@ export const useChatEngine = () => {
       const res = await createSession(userId, 'New Conversation');
       if (res.success) {
         await loadSidebarData(); 
-        navigate(`/chat/${res.data._id}`); 
+        navigate(`/session/${res.data._id}`); 
       }
     } catch (err) {
       console.error('❌ Hook Layer Error [createNewWorkspace]:', err.message);

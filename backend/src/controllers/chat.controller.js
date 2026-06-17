@@ -13,7 +13,7 @@ async function createChat(req, res){
     }
 
     const newSession = await ChatSession.create({
-      userId,
+      userId:userId,
       title: title || 'New Conversation'
     });
 
