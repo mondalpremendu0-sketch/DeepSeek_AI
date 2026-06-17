@@ -1,15 +1,17 @@
 @import "tailwindcss";
 
-
-
-/* At the bottom of src/index.css */
-
 html, body, #root {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100vh;
-  height: 100dvh;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
   overflow: hidden !important;
-  background-color: #020617; /* Matches slate-950 layout foundations */
+  background-color: #020617;
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  
+  /* FIXED: Changed 'none' to 'pan-y' so the web application allows your finger to swipe up and down */
+  touch-action: pan-y !important; 
 }
