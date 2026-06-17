@@ -22,10 +22,10 @@ export default function Home() {
   } = useChatEngine();
 
   return (
-    // FIXED: Using absolute positioning limits on the parent view wrapper to bypass any broken height properties
-    <div className="absolute inset-0 w-screen h-[100dvh] max-h-[100dvh] bg-slate-950 text-slate-100 flex overflow-hidden antialiased">
+    // FIXED: Using a responsive flex frame container row to keep the layout clean
+    <div className="w-full h-screen max-h-screen flex overflow-hidden bg-slate-950 text-slate-100 font-sans antialiased">
       
-      {/* Navigation Sidebar Panel */}
+      {/* Sidebar Panel view */}
       <Sidebar 
         sessions={sessions}
         currentSessionId={currentSessionId}
@@ -36,12 +36,12 @@ export default function Home() {
         setIsOpen={setMobileSidebarOpen}
       />
 
-      {/* FIXED WINDOW WRAPPER LAYER */}
-      {/* Enforces a hard h-full limit so inner child text blocks can never expand the layout height */}
-      <div className="absolute top-0 right-0 left-0 md:left-[260px] bottom-0 h-full max-h-[100dvh] flex flex-col overflow-hidden bg-slate-950">
+      {/* MAIN VIEWPORT PANEL COLUMN */}
+      {/* FIXED: 'flex-1 flex flex-col h-full min-h-0 overflow-hidden' ensures no text block can expand the height */}
+      <div className="flex-1 flex flex-col h-full min-h-0 overflow-hidden relative bg-slate-950">
         
-        {/* Header Block (Fixed 3.5rem / 56px height) */}
-        <header className="h-14 max-h-14 border-b border-slate-800/60 bg-slate-900/40 flex items-center justify-between px-4 md:px-6 shrink-0 backdrop-blur-md z-30 w-full">
+        {/* Top Navbar Row Header (Fixed height) */}
+        <header className="h-14 min-h-14 border-b border-slate-800/60 bg-slate-900/40 flex items-center justify-between px-4 md:px-6 shrink-0 z-20">
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -60,17 +60,14 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Dynamic Message Timeline Window Container */}
-        {/* FIXED: Formatted the chat canvas parent grid with strict space allocations to force internal scrollbars to hook */}
-        <div className="w-full h-[calc(100dvh-9rem)] max-h-[calc(100dvh-9rem)] relative overflow-hidden flex-1 min-h-0">
-          <ChatCanvas 
-            messages={messages}
-            liveThinking={liveThinking}
-            liveAnswer={liveAnswer}
-          />
-        </div>
+        {/* Dynamic Chat Messages Canvas Slot */}
+        <ChatCanvas 
+          messages={messages}
+          liveThinking={liveThinking}
+          liveAnswer={liveAnswer}
+        />
 
-        {/* Input Interface Deck Row */}
+        {/* Grounded Input Controller Panel */}
         <PromptInput 
           dispatchPrompt={dispatchPrompt}
           isGenerating={isGenerating}
