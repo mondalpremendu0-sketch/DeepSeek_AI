@@ -40,7 +40,7 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
             </div>
           )}
 
-          {/* ISOLATED TEXT CONTAINER ZONE */}
+          {/* TEXT CONTENT CONTAINER */}
           <div className={`w-full text-xs break-words space-y-2 select-text ${isUser ? 'text-white font-medium' : 'text-slate-300'}`}>
             {isUser ? (
               <div className="whitespace-pre-wrap">{content}</div>
@@ -54,19 +54,13 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
                   strong: ({ children }) => <strong className="font-bold text-blue-400">{children}</strong>,
                   h1: ({ children }) => <h1 className="text-xs font-bold text-slate-100 uppercase mt-3 mb-1 font-mono border-b border-slate-800/60 pb-1">{children}</h1>,
                   h2: ({ children }) => <h2 className="text-xs font-bold text-slate-200 mt-2 mb-1 font-mono">{children}</h2>,
-                  code: ({ inline, className, children }) => {
+                  code: ({ inline, children }) => {
                     return inline ? (
-                      <code className="bg-slate-950 text-blue-400 font-mono px-1.5 py-0.5 rounded text-[11px] border border-slate-800">
-                        {children}
-                      </code>
+                      <code className="bg-slate-950 text-blue-400 font-mono px-1.5 py-0.5 rounded text-[11px] border border-slate-800">{children}</code>
                     ) : (
                       <div className="my-2 border border-slate-800 rounded-lg overflow-hidden">
-                        <div className="bg-slate-950 border-b border-slate-800 px-3 py-1.5 flex items-center gap-1.5 text-[9px] font-mono text-slate-500 uppercase">
-                          <Terminal size={10} /> console matrix log
-                        </div>
-                        <pre className="bg-slate-950/60 p-3 overflow-x-auto font-mono text-[11px] text-emerald-400 leading-normal">
-                          <code>{children}</code>
-                        </pre>
+                        <div className="bg-slate-950 border-b border-slate-800 px-3 py-1.5 flex items-center gap-1.5 text-[9px] font-mono text-slate-500 uppercase"><Terminal size={10} /> console block</div>
+                        <pre className="bg-slate-950/60 p-3 overflow-x-auto font-mono text-[11px] text-emerald-400"><code>{children}</code></pre>
                       </div>
                     );
                   }
@@ -83,56 +77,48 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
   };
 
   return (
-    /* FIXED: Using 'absolute inset-0' combined with 'overflow-y-scroll' and Webkit parameters.
-       This explicitly detaches the chat history canvas from fluid flex measurements and opens touch scrolling channels directly.
-    */
-    <div className="w-full flex-1 min-h-0 relative bg-slate-950">
-      <div 
-    ref={containerRef}
-    className="absolute inset-0 overflow-y-scroll overflow-x-hidden p-4 md:p-6 bg-slate-950 scroll-smooth"
-    style={{ 
-      WebkitOverflowScrolling: 'touch',
-      touchAction: 'pan-y'
-    }}
-  >
-        <div className="max-w-2xl mx-auto flex flex-col space-y-6 pb-24">
-          
-          {workspaceIsEmpty && (
-            <div className="h-[40vh] flex flex-col justify-center items-center text-center space-y-2">
-              <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-blue-400 shadow-md">
-                <Brain size={18} className="animate-pulse" />
-              </div>
-              <h3 className="text-xs font-semibold tracking-wider text-slate-400 uppercase pt-1">Analytical Sandbox Active</h3>
-              <p className="text-xs text-slate-600 max-w-xs">
-                Dispatch a structured query payload to engage the reasoning stream matrix.
-              </p>
+    // FIXED: Using standard Tailwind layout utilities ('flex-1 min-h-0 overflow-y-auto') 
+    // to bring the message template views back and ensure smooth scrolling functions correctly.
+    <div 
+      ref={containerRef}
+      className="w-full flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4 md:p-6 bg-slate-950 scroll-smooth [scrollbar-width:thin]"
+      style={{ WebkitOverflowScrolling: 'touch' }}
+    >
+      <div className="max-w-2xl mx-auto flex flex-col space-y-6 pb-20">
+        
+        {workspaceIsEmpty && (
+          <div className="h-[50vh] flex flex-col justify-center items-center text-center space-y-2">
+            <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800/80 flex items-center justify-center text-blue-400 shadow-md">
+              <Brain size={18} className="animate-pulse" />
             </div>
-          )}
+            <h3 className="text-xs font-semibold tracking-wider text-slate-400 uppercase pt-1">Analytical Sandbox Active</h3>
+            <p className="text-xs text-slate-600 max-w-xs">
+              Dispatch a structured query payload to engage the reasoning stream matrix.
+            </p>
+          </div>
+        )}
 
-          {messages.map((msg, index) => (
-            <RenderBubbleBlock 
-              key={`history-node-${index}`}
-              role={msg.role}
-              content={msg.content}
-              reasoningContent={msg.reasoningContent}
-              thinkingTime={msg.thinkingTime}
-              isLive={false}
-            />
-          ))}
+        {messages.map((msg, index) => (
+          <RenderBubbleBlock 
+            key={`history-${index}`}
+            role={msg.role}
+            content={msg.content}
+            reasoningContent={msg.reasoningContent}
+            thinkingTime={msg.thinkingTime}
+            isLive={false}
+          />
+        ))}
 
-          {(liveThinking || liveAnswer) && (
-            <RenderBubbleBlock 
-              key="active-live-stream-node"
-              role="assistant"
-              content={liveAnswer}
-              reasoningContent={liveThinking}
-              thinkingTime={null}
-              isLive={true}
-            />
-          )}
-
-          <div className="h-2 shrink-0" />
-        </div>
+        {(liveThinking || liveAnswer) && (
+          <RenderBubbleBlock 
+            key="active-live-stream-node"
+            role="assistant"
+            content={liveAnswer}
+            reasoningContent={liveThinking}
+            thinkingTime={null}
+            isLive={true}
+          />
+        )}
       </div>
     </div>
   );
