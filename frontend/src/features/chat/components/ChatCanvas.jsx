@@ -88,13 +88,13 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
     */
     <div className="w-full flex-1 min-h-0 relative bg-slate-950">
       <div 
-        ref={containerRef}
-        className="absolute inset-0 overflow-y-scroll p-4 md:p-6 scroll-smooth"
-        style={{ 
-          WebkitOverflowScrolling: 'touch',
-          touchAction: 'pan-y'
-        }}
-      >
+    ref={containerRef}
+    className="absolute inset-0 overflow-y-scroll overflow-x-hidden p-4 md:p-6 bg-slate-950 scroll-smooth"
+    style={{ 
+      WebkitOverflowScrolling: 'touch',
+      touchAction: 'pan-y'
+    }}
+  >
         <div className="max-w-2xl mx-auto flex flex-col space-y-6 pb-24">
           
           {workspaceIsEmpty && (
