@@ -23,8 +23,7 @@ export default function Home() {
 
   return (
     // FIXED: Using 'absolute inset-0 max-h-[100dvh] overflow-hidden' to bypass any broken parent or #root CSS bugs.
-    <div className="absolute inset-0 h-[100dvh] max-h-[100dvh] w-screen bg-slate-950 text-slate-100 font-sans flex overflow-hidden antialiased">
-      
+    <div className="w-full h-full flex overflow-hidden bg-slate-950">
       {/* Sidebar Navigation Layer */}
       <Sidebar 
         sessions={sessions}
