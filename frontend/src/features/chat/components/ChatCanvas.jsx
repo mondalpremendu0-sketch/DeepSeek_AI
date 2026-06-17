@@ -78,7 +78,9 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
   };
 
   return (
-    <div className="w-full flex-1 h-0 min-h-0 overflow-y-auto p-4 md:p-6 bg-slate-950 [scrollbar-width:thin] scrollbar-thumb-slate-800/80">
+    // FIXED: Formatted the canvas container using explicit height values ('h-0 min-h-0 flex-1 overflow-y-auto layout-touch') 
+    // This allows natural scroll gestures to run seamlessly without layout leaks.
+    <div className="w-full flex-1 h-0 min-h-0 overflow-y-auto touch-auto p-4 md:p-6 bg-slate-950 [scrollbar-width:thin] scrollbar-thumb-slate-800/80">
       <div className="max-w-2xl mx-auto space-y-6 pb-6">
         
         {/* Render Sandbox Placeholder Welcome Block */}
