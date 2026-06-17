@@ -129,6 +129,7 @@ async function getMe_controller(req, res, next) {
   try {
      
     const userId = req.user.id;
+    
 
     if (!userId) {
         return next(new AppError("User not found", 401));
@@ -146,6 +147,7 @@ async function getMe_controller(req, res, next) {
         success: true,
         message: "data fetched successfully",
         user: {
+            id:userId,
             firstname: userInfo.firstname,
             lastname: userInfo.lastname,
             email: userInfo.email,

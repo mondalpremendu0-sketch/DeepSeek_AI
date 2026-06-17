@@ -30,13 +30,14 @@ async function createChat(req, res){
 async function userChats(req, res) {
   try {
     const { userId } = req.params;
+    console.log(userId);
 
     if (!userId) {
-      return res.status(400).json({ success: false, 
+      return res.status(400).json({ 
         message: 'User ID parameters are missing.' });
     }
 
-    const sessions = await ChatSession.find({ userId }).sort({ updatedAt: -1 });
+    const sessions = await ChatSession.find({ _id:userId }).sort({ updatedAt: -1 });
 
     res.status(200).json({ success: true, data: sessions });
   } catch (error) {

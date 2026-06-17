@@ -16,9 +16,8 @@ async function isLogedIn(req,res,next) {
     return next(new AppError("Invalid Token, Unauthorised!!", 400));
   }
   
-  const user = await User.findOne({_id:decoded.id});
   
-  req.user = user;
+  req.user = decoded;
   next();
 }
 

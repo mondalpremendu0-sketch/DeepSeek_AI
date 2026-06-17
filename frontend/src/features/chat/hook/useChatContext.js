@@ -27,7 +27,8 @@ export const useChatEngine = () => {
     isGenerating,
     setIsGenerating
   } = context;
-  const {user} = authContext
+  const {user} = authContext;
+  //console.log(user);
 
 
 
@@ -40,6 +41,7 @@ export const useChatEngine = () => {
   const liveAnswerRef = useRef('');
 
   const userId = user.id;
+  console.log(userId);
 
   // Keep references continuously in sync with current context state
   useEffect(() => {
