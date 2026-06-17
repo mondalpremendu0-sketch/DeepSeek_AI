@@ -1,9 +1,10 @@
 // src/hooks/useChatEngine.js
 import { useContext, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router';
 import { createSession, getUserSessions, getSessionMessages, deleteSession } from '../services/api.service.js';
 import socketService from '../services/socket.service.js';
 import { ChatContext } from '../chat.context.jsx';
+import { AuthContext } from '../../auth/auth.context.jsx';
 
 // GLOBAL STREAM BUFFERING QUEUES (Isolated from React lifecycle state drops)
 const answerQueue = [];
@@ -11,6 +12,7 @@ let throttleInterval = null;
 
 export const useChatEngine = () => {
   const context = useContext(ChatContext);
+  const authContext = useContext(AuthContext);
   const {
     sessions,
     setSessions,
@@ -25,6 +27,9 @@ export const useChatEngine = () => {
     isGenerating,
     setIsGenerating
   } = context;
+  const {user} = authContext
+
+
 
   const { sessionId } = useParams();
   const navigate = useNavigate();
@@ -34,7 +39,7 @@ export const useChatEngine = () => {
   const liveThinkingRef = useRef('');
   const liveAnswerRef = useRef('');
 
-  const userId = '65f1a2b3c4d5e6f7a8b9c0d1';
+  const userId = user.id;
 
   // Keep references continuously in sync with current context state
   useEffect(() => {

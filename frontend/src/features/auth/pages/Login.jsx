@@ -12,6 +12,7 @@ import {useAuthContext} from '../hook/useAuthContext.js'
 export default function LoginPage() {
   const navigate = useNavigate();
   const {handleLogin,user} = useAuthContext();
+  //console.log(user);
   // Initialize react-hook-form validation hooks
   const {
     register,

@@ -52,7 +52,8 @@ async function register_controller(req, res, next) {
             user: {
                 firstname,
                 lastname,
-                email
+                email,
+                id:user._id
             }
         });
     } catch (err) {
@@ -112,6 +113,7 @@ async function login_controller(req, res, next) {
             success: true,
             message: "Loged In Successfully",
             user: {
+              id:userInfo._id,
                 firstname: userInfo.firstname,
                 lastname: userInfo.lastname,
                 email: userInfo.email,

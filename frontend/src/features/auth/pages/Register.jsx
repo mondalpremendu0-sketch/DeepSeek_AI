@@ -14,7 +14,7 @@ import {useAuthContext} from '../hook/useAuthContext.js'
 export default function RegisterPage() {
   const navigate = useNavigate();
   const {handleRegister,user} = useAuthContext();
-  
+  //console.log(user);
   // Initialize react-hook-form with strict validation mode configuration
   const {
     register,
