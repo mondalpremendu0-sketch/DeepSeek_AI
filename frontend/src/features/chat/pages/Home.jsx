@@ -22,10 +22,10 @@ export default function Home() {
   } = useChatEngine();
 
   return (
-    // FIXED: Ensured absolute structural locking using w-full h-[100dvh] without suppressing scroll selectors
-    <div className="w-full h-[100dvh] bg-slate-950 text-slate-100 font-sans flex overflow-hidden antialiased">
+    // FIXED: Using 'absolute inset-0 max-h-[100dvh] overflow-hidden' to bypass any broken parent or #root CSS bugs.
+    <div className="absolute inset-0 h-[100dvh] max-h-[100dvh] w-screen bg-slate-950 text-slate-100 font-sans flex overflow-hidden antialiased">
       
-      {/* Sidebar Navigation Panel View */}
+      {/* Sidebar Navigation Layer */}
       <Sidebar 
         sessions={sessions}
         currentSessionId={currentSessionId}
@@ -36,12 +36,11 @@ export default function Home() {
         setIsOpen={setMobileSidebarOpen}
       />
 
-      {/* FIXED CONTAINER MAIN PANEL BLOCK */}
-      {/* Enforced max-h-full and min-h-0 so flex box compressions activate internal scrolling automatically */}
-      <div className="flex-1 flex flex-col h-full max-h-full min-h-0 min-w-0 overflow-hidden relative bg-slate-950">
+      {/* FIXED PANEL: We strictly define the header (3.5rem) and footer input (approx 5rem) constraints */}
+      <div className="flex-1 flex flex-col h-full w-full max-h-[100dvh] relative overflow-hidden bg-slate-950">
         
-        {/* Top Navbar Row Header */}
-        <header className="h-14 border-b border-slate-800/60 bg-slate-900/40 flex items-center justify-between px-4 md:px-6 shrink-0 backdrop-blur-md z-30 w-full">
+        {/* Top Navbar Row (Fixed 3.5rem / 56px height) */}
+        <header className="h-14 max-h-14 border-b border-slate-800/60 bg-slate-900/40 flex items-center justify-between px-4 md:px-6 shrink-0 backdrop-blur-md z-30 w-full">
           <div className="flex items-center gap-3">
             <button
               type="button"

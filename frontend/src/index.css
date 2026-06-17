@@ -2,11 +2,14 @@
 
 
 
+/* At the bottom of src/index.css */
+
 html, body, #root {
-  background-color: #020617; 
   margin: 0;
   padding: 0;
-  height: 100%;
   width: 100%;
-  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden !important;
+  background-color: #020617; /* Matches slate-950 layout foundations */
 }

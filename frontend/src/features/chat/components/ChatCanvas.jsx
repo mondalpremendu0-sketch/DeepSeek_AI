@@ -6,14 +6,12 @@ import { Brain, Cpu, Terminal, Sparkles } from 'lucide-react';
 export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
   const scrollElementRef = useRef(null);
 
-  // Instantly lock screen alignment anchors on active token updates
   useEffect(() => {
     scrollElementRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, liveThinking, liveAnswer]);
 
   const workspaceIsEmpty = messages.length === 0 && !liveThinking && !liveAnswer;
 
-  // Embedded internal component layer to guarantee uniform text rendering formats
   const RenderBubbleBlock = ({ role, content, reasoningContent, thinkingTime, isLive }) => {
     const isUser = role === 'user';
     return (
@@ -22,13 +20,12 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
           {isUser ? '// Operator Command' : isLive ? '// Compiling Live Stream' : '// Model Optimized Output'}
         </span>
 
-        <div className={`max-w-[92%] text-xs leading-relaxed p-4 rounded-xl border transition-all duration-200 ${
+        <div className={`max-w-[92%] text-xs leading-relaxed p-4 rounded-xl border ${
           isUser
-            ? 'bg-blue-600 text-white border-blue-500 rounded-tr-none font-medium shadow-md'
+            ? 'bg-blue-600 text-white border-blue-500 rounded-tr-none'
             : 'bg-slate-900 text-slate-300 border-slate-800/80 rounded-tl-none shadow-lg'
         }`}>
           
-          {/* COGNITIVE INTERIOR THINKING TRACK CONTAINER */}
           {!isUser && reasoningContent && (
             <div className="mb-4 bg-slate-950/80 border-l-2 border-slate-700 rounded-r-lg p-3 font-mono text-[11px] text-slate-400 space-y-1.5">
               <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
@@ -39,7 +36,6 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
             </div>
           )}
 
-          {/* DYNAMIC STYLED MARKDOWN PARSING FRAME */}
           <div className={`prose prose-invert max-w-none text-xs break-words ${isUser ? 'prose-p:text-white' : 'prose-p:text-slate-300'}`}>
             <ReactMarkdown
               components={{
@@ -78,12 +74,11 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
   };
 
   return (
-    // FIXED: Formatted the canvas container using explicit height values ('h-0 min-h-0 flex-1 overflow-y-auto layout-touch') 
-    // This allows natural scroll gestures to run seamlessly without layout leaks.
-    <div className="w-full flex-1 h-0 min-h-0 overflow-y-auto touch-auto p-4 md:p-6 bg-slate-950 [scrollbar-width:thin] scrollbar-thumb-slate-800/80">
-      <div className="max-w-2xl mx-auto space-y-6 pb-6">
+    // FIXED: Enforced a strict height rule 'h-[calc(100dvh-9rem)] max-h-[calc(100dvh-9rem)]' 
+    // This blocks your chat canvas from growing past the screen window, enabling immediate scrolling responses.
+    <div className="w-full h-[calc(100dvh-9rem)] max-h-[calc(100dvh-9rem)] overflow-y-scroll overflow-x-hidden touch-auto p-4 md:p-6 bg-slate-950 [scrollbar-width:thin] scrollbar-thumb-slate-800/80">
+      <div className="max-w-2xl mx-auto space-y-6 pb-12">
         
-        {/* Render Sandbox Placeholder Welcome Block */}
         {workspaceIsEmpty && (
           <div className="h-[45vh] flex flex-col justify-center items-center text-center space-y-2">
             <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-blue-400 shadow-md">
@@ -96,7 +91,6 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
           </div>
         )}
 
-        {/* 1. MAP CHRONOLOGICAL PAST MESSAGE HISTORY RECORDINGS */}
         {messages.map((msg, index) => (
           <RenderBubbleBlock 
             key={`history-node-${index}`}
@@ -108,7 +102,6 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
           />
         ))}
 
-        {/* 2. RENDER ACTIVE INCOMING STREAM TOKENS CONTAINER */}
         {(liveThinking || liveAnswer) && (
           <RenderBubbleBlock 
             key="active-live-stream-node"
@@ -120,7 +113,7 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
           />
         )}
 
-        <div ref={scrollElementRef} />
+        <div ref={scrollElementRef} className="h-2" />
       </div>
     </div>
   );
