@@ -1,16 +1,16 @@
 // src/components/ChatCanvas.jsx
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Brain, Cpu, Terminal, Sparkles } from 'lucide-react';
 
 export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
-  const containerRef = useRef(null);
 
-  // Instantly force-scroll the internal element directly to the bottom node
+  // FIXED: We now scroll the actual browser window natively!
   useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = containerRef.current.scrollHeight;
-    }
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: 'smooth'
+    });
   }, [messages, liveThinking, liveAnswer]);
 
   const workspaceIsEmpty = messages.length === 0 && !liveThinking && !liveAnswer;
@@ -22,14 +22,9 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
         <span className="text-[10px] uppercase font-mono font-bold tracking-widest text-slate-600 px-1">
           {isUser ? '// Operator Command' : isLive ? '// Compiling Live Stream' : '// Model Optimized Output'}
         </span>
-
         <div className={`max-w-[90%] text-xs leading-relaxed p-4 rounded-xl border ${
-          isUser
-            ? 'bg-blue-600 text-white border-blue-500 rounded-tr-none shadow-md'
-            : 'bg-slate-900 text-slate-300 border-slate-800/80 rounded-tl-none shadow-lg'
+          isUser ? 'bg-blue-600 text-white border-blue-500 rounded-tr-none shadow-md' : 'bg-slate-900 text-slate-300 border-slate-800/80 rounded-tl-none shadow-lg'
         }`}>
-          
-          {/* THINKING TRACK LOG CONTAINER */}
           {!isUser && reasoningContent && (
             <div className="mb-4 bg-slate-950/80 border-l-2 border-slate-700 rounded-r-lg p-3 font-mono text-[11px] text-slate-400 space-y-1.5 select-text">
               <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
@@ -39,8 +34,6 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
               <div className="whitespace-pre-wrap leading-normal opacity-85">{reasoningContent}</div>
             </div>
           )}
-
-          {/* TEXT CONTENT CONTAINER */}
           <div className={`w-full text-xs break-words space-y-2 select-text ${isUser ? 'text-white font-medium' : 'text-slate-300'}`}>
             {isUser ? (
               <div className="whitespace-pre-wrap">{content}</div>
@@ -59,7 +52,7 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
                       <code className="bg-slate-950 text-blue-400 font-mono px-1.5 py-0.5 rounded text-[11px] border border-slate-800">{children}</code>
                     ) : (
                       <div className="my-2 border border-slate-800 rounded-lg overflow-hidden">
-                        <div className="bg-slate-950 border-b border-slate-800 px-3 py-1.5 flex items-center gap-1.5 text-[9px] font-mono text-slate-500 uppercase"><Terminal size={10} /> console block</div>
+                        <div className="bg-slate-950 border-b border-slate-800 px-3 py-1.5 flex items-center gap-1.5 text-[9px] font-mono text-slate-500 uppercase"><Terminal size={10} /> console</div>
                         <pre className="bg-slate-950/60 p-3 overflow-x-auto font-mono text-[11px] text-emerald-400"><code>{children}</code></pre>
                       </div>
                     );
@@ -70,24 +63,16 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
               </ReactMarkdown>
             )}
           </div>
-
         </div>
       </div>
     );
   };
 
-  // Ensure the bottom return structure of your src/components/ChatCanvas.jsx file looks exactly like this:
   return (
-    /* 🔥 ABSOLUTE INSET-0 SCROLL FIX 🔥
-      Because the parent is a strict Grid cell, 'absolute inset-0' perfectly fills the space 
-      and 'overflow-y-auto' handles the swiping flawlessly without confusing the mobile browser.
-    */
-    <div 
-      ref={containerRef}
-      className="absolute inset-0 w-full h-full overflow-y-auto overflow-x-hidden p-4 md:p-6 bg-slate-950 scroll-smooth"
-      style={{ WebkitOverflowScrolling: 'touch' }}
-    >
-      <div className="max-w-2xl mx-auto flex flex-col space-y-6 pb-12">
+    // FIXED: Stripped all flex height locks, overflows, and absolute properties. 
+    // This is just a normal layout container that pushes the body height down!
+    <div className="w-full p-4 md:p-6 bg-transparent">
+      <div className="max-w-2xl mx-auto flex flex-col space-y-6">
         
         {workspaceIsEmpty && (
           <div className="h-[40vh] flex flex-col justify-center items-center text-center space-y-2">
@@ -102,25 +87,11 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
         )}
 
         {messages.map((msg, index) => (
-          <RenderBubbleBlock 
-            key={`history-${index}`}
-            role={msg.role}
-            content={msg.content}
-            reasoningContent={msg.reasoningContent}
-            thinkingTime={msg.thinkingTime}
-            isLive={false}
-          />
+          <RenderBubbleBlock key={`history-${index}`} role={msg.role} content={msg.content} reasoningContent={msg.reasoningContent} thinkingTime={msg.thinkingTime} isLive={false} />
         ))}
 
         {(liveThinking || liveAnswer) && (
-          <RenderBubbleBlock 
-            key="active-live-stream-node"
-            role="assistant"
-            content={liveAnswer}
-            reasoningContent={liveThinking}
-            thinkingTime={null}
-            isLive={true}
-          />
+          <RenderBubbleBlock key="active-live-stream-node" role="assistant" content={liveAnswer} reasoningContent={liveThinking} thinkingTime={null} isLive={true} />
         )}
       </div>
     </div>
