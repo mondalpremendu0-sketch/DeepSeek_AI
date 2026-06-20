@@ -76,19 +76,21 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
     );
   };
 
+  // Ensure the bottom return structure of your src/components/ChatCanvas.jsx file looks exactly like this:
   return (
-    // FIXED: Stripped out the forced touch-action and absolute classes.
-    // 'flex-1' takes remaining height, 'overflow-y-auto' creates the scrollbar natively.
+    /* 🔥 ABSOLUTE INSET-0 SCROLL FIX 🔥
+      Because the parent is a strict Grid cell, 'absolute inset-0' perfectly fills the space 
+      and 'overflow-y-auto' handles the swiping flawlessly without confusing the mobile browser.
+    */
     <div 
       ref={containerRef}
-      className="w-full flex-1 overflow-y-auto p-4 md:p-6 bg-slate-950 scroll-smooth"
+      className="absolute inset-0 w-full h-full overflow-y-auto overflow-x-hidden p-4 md:p-6 bg-slate-950 scroll-smooth"
       style={{ WebkitOverflowScrolling: 'touch' }}
     >
-      {/* We use 'min-h-full' to ensure the inner content stretches properly to trigger scrollbars */}
-      <div className="max-w-2xl mx-auto flex flex-col space-y-6 pb-6 min-h-full">
+      <div className="max-w-2xl mx-auto flex flex-col space-y-6 pb-12">
         
         {workspaceIsEmpty && (
-          <div className="h-[50vh] flex flex-col justify-center items-center text-center space-y-2">
+          <div className="h-[40vh] flex flex-col justify-center items-center text-center space-y-2">
             <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800/80 flex items-center justify-center text-blue-400 shadow-md">
               <Brain size={18} className="animate-pulse" />
             </div>
@@ -120,9 +122,6 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
             isLive={true}
           />
         )}
-        
-        {/* Invisible spacer to ensure you can scroll slightly past the last message */}
-        <div className="h-4 w-full shrink-0"></div>
       </div>
     </div>
   );
