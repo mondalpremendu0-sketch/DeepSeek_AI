@@ -3,25 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content" />
+    
     <link rel="stylesheet" href="./src/index.css" type="text/css" media="all" />
-    <title>Deepsea</title>
+    <title>Gemini Workspace</title>
   </head>
   <body>
     <div id="root">
-      <div className="fixed inset-0 h-[100dvh] w-screen bg-slate-950 flex flex-col justify-center items-center text-center select-none">
-        <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800/80 flex items-center justify-center text-blue-500">
-        </div>
-        <span className="text-[10px] font-mono text-slate-600 tracking-widest uppercase mt-3">
+      <div class="fixed inset-0 h-[100dvh] w-screen bg-slate-950 flex flex-col justify-center items-center text-center select-none">
+        <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800/80 flex items-center justify-center text-blue-500">
+           </div>
+        <span class="text-[10px] font-mono text-slate-600 tracking-widest uppercase mt-3">
           Verifying Core Credentials...
         </span>
       </div>
-      
     </div>
+    
     <script type="module" src="/src/main.jsx"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-        <script>
-            eruda.init();
-        </script>
+    <script>
+      eruda.init();
+    </script>
   </body>
 </html>
