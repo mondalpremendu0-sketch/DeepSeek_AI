@@ -16,7 +16,6 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
   const workspaceIsEmpty = messages.length === 0 && !liveThinking && !liveAnswer;
 
   const RenderBubbleBlock = ({ role, content, reasoningContent, thinkingTime, isLive }) => {
-    // ... (Keep your exact RenderBubbleBlock code here, no changes needed inside this function!)
     const isUser = role === 'user';
     return (
       <div className={`w-full flex flex-col ${isUser ? 'items-end' : 'items-start'} space-y-1`}>
@@ -70,14 +69,13 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
   };
 
   return (
-    /* 🔥 THE SCROLL FIX 🔥 
-       'absolute inset-0' perfectly fills the parent wrapper.
-       'overflow-y-auto' enables scrolling.
-       'overscroll-y-contain' ensures your swipe gestures stay inside this box and don't trigger browser reloads! 
-    */
-    <div 
+    // THE ULTIMATE SCROLL FIX.
+    // flex-1: Take up all the space between the header and footer.
+    // min-h-0: CRITICAL for flex children to scroll.
+    // overflow-y-auto: Let the browser handle vertical scrolling.
+    <main 
       ref={containerRef}
-      className="absolute inset-0 overflow-y-auto overscroll-y-contain p-4 md:p-6 scroll-smooth [scrollbar-width:thin]"
+      className="flex-1 min-h-0 overflow-y-auto p-4 md:p-6 scroll-smooth touch-pan-y"
     >
       <div className="max-w-2xl mx-auto flex flex-col space-y-6 pb-6">
         
@@ -101,6 +99,6 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
           <RenderBubbleBlock key="active-live-stream-node" role="assistant" content={liveAnswer} reasoningContent={liveThinking} thinkingTime={null} isLive={true} />
         )}
       </div>
-    </div>
+    </main>
   );
 }
