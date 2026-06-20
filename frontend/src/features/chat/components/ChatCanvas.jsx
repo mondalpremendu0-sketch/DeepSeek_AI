@@ -59,15 +59,12 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
     );
   };
 
+  // At the bottom of src/components/ChatCanvas.jsx
   return (
-    // 🔥 THE TOUCH OVERRIDE 🔥
-    // pointer-events-auto ensures your finger connects with THIS div, bypassing transparent shields.
-    // overscroll-none completely disables the browser's pull-to-refresh reload hook.
-    <div 
-      ref={containerRef}
-      className="absolute inset-0 w-full h-full overflow-y-auto overscroll-none p-4 md:p-6 scroll-smooth pointer-events-auto touch-pan-y"
-    >
-      <div className="max-w-2xl mx-auto flex flex-col space-y-6 pb-4">
+    // STRIPPED CLEAN: No flex-1, no absolute inset-0, no h-full! 
+    // Just padding and the content.
+    <div ref={containerRef} className="w-full p-4 md:p-6 pb-8">
+      <div className="max-w-2xl mx-auto flex flex-col space-y-6">
         
         {workspaceIsEmpty && (
           <div className="h-[40vh] flex flex-col justify-center items-center text-center space-y-2">
