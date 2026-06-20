@@ -77,14 +77,14 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
   };
 
   return (
-    // FIXED: Using standard Tailwind layout utilities ('flex-1 min-h-0 overflow-y-auto') 
-    // to bring the message template views back and ensure smooth scrolling functions correctly.
+    // FIXED: Changed overflow-y-auto to overflow-y-scroll to force a scrollbar context.
+    // ADDED: touch-pan-y (forces mobile to allow up/down swipes) and overscroll-y-contain (stops parent background from stealing the scroll).
     <div 
       ref={containerRef}
-      className="w-full flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4 md:p-6 bg-slate-950 scroll-smooth [scrollbar-width:thin]"
+      className="w-full flex-1 min-h-0 overflow-y-scroll overflow-x-hidden p-4 md:p-6 bg-slate-950 scroll-smooth touch-pan-y overscroll-y-contain [scrollbar-width:thin]"
       style={{ WebkitOverflowScrolling: 'touch' }}
     >
-      <div className="max-w-2xl mx-auto flex flex-col space-y-6 pb-20">
+      <div className="max-w-2xl mx-auto flex flex-col space-y-6 pb-20 block">
         
         {workspaceIsEmpty && (
           <div className="h-[50vh] flex flex-col justify-center items-center text-center space-y-2">

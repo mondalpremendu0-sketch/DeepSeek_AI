@@ -4,14 +4,8 @@ html, body, #root {
   margin: 0 !important;
   padding: 0 !important;
   width: 100% !important;
-  height: 100dvh !important;
+  height: 100dvh !important; /* FIXED: Use 100dvh globally */
   max-height: 100dvh !important;
   overflow: hidden !important;
   background-color: #020617;
-  position: fixed !important;
-  top: 0;
-  left: 0;
-  
-  /* FIXED: Changed 'none' to 'pan-y' so the web application allows your finger to swipe up and down */
-  touch-action: pan-y !important; 
 }
