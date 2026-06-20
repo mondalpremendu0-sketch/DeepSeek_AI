@@ -12,15 +12,15 @@ export default function Home() {
 
   return (
     // 'fixed inset-0' locks the app boundary securely to the glass of the phone.
-    <div className="fixed inset-0 w-full h-full bg-slate-950 text-slate-100 font-sans flex flex-col overflow-hidden">
+    <div className="fixed inset-0 w-full h-[100dvh] bg-slate-950 text-slate-100 font-sans overflow-hidden">
       
       <Sidebar 
         sessions={sessions} currentSessionId={currentSessionId} createNewWorkspace={createNewWorkspace} 
         purgeWorkspace={purgeWorkspace} isGenerating={isGenerating} isOpen={mobileSidebarOpen} setIsOpen={setMobileSidebarOpen}
       />
 
-      {/* FIXED HEADER: High z-index to stay on top */}
-      <header className="shrink-0 h-14 border-b border-slate-800/60 bg-slate-900/40 flex items-center justify-between px-4 md:px-6 z-30">
+      {/* 1. HEADER: Locked exactly to the top 56px (h-14) */}
+      <header className="absolute top-0 left-0 right-0 h-14 border-b border-slate-800/60 bg-slate-900/40 flex items-center justify-between px-4 md:px-6 z-30">
         <div className="flex items-center gap-3">
           <button onClick={() => setMobileSidebarOpen(true)} className="p-2 rounded-lg text-slate-400 hover:text-slate-100 bg-slate-900 border border-slate-800/80 md:hidden outline-none">
             <Menu size={16} />
@@ -32,13 +32,17 @@ export default function Home() {
         </div>
       </header>
 
-      {/* DYNAMIC MIDDLE AREA: flex-1 takes exact remaining space, min-h-0 prevents overflow */}
-      <main className="flex-1 min-h-0 w-full relative z-10">
+      {/* 2. CHAT AREA: Forced to live between the header and footer. THIS FORCES THE SCROLLBAR! */}
+      {/* top-14 starts it below the header. bottom-[76px] ends it right above the input box. */}
+      <main 
+        className="absolute top-14 bottom-[76px] left-0 right-0 overflow-y-auto overscroll-none scroll-smooth touch-pan-y"
+        style={{ WebkitOverflowScrolling: 'touch' }}
+      >
         <ChatCanvas messages={messages} liveThinking={liveThinking} liveAnswer={liveAnswer} />
       </main>
 
-      {/* FIXED FOOTER: High z-index to stay above the chat */}
-      <div className="shrink-0 w-full z-30 bg-slate-950 border-t border-slate-900">
+      {/* 3. FOOTER: Locked exactly to the bottom of the screen */}
+      <div className="absolute bottom-0 left-0 right-0 z-30 bg-slate-950 border-t border-slate-900">
         <PromptInput dispatchPrompt={dispatchPrompt} isGenerating={isGenerating} />
       </div>
 
