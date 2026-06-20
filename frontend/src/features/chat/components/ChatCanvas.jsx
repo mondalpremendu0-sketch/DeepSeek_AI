@@ -1,21 +1,22 @@
 // src/components/ChatCanvas.jsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Brain, Cpu, Terminal, Sparkles } from 'lucide-react';
 
 export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
+  const containerRef = useRef(null);
 
-  // FIXED: We now scroll the actual browser window natively!
+  // Auto-scroll to bottom
   useEffect(() => {
-    window.scrollTo({
-      top: document.body.scrollHeight,
-      behavior: 'smooth'
-    });
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
   }, [messages, liveThinking, liveAnswer]);
 
   const workspaceIsEmpty = messages.length === 0 && !liveThinking && !liveAnswer;
 
   const RenderBubbleBlock = ({ role, content, reasoningContent, thinkingTime, isLive }) => {
+    // ... (Keep your exact RenderBubbleBlock code here, no changes needed inside this function!)
     const isUser = role === 'user';
     return (
       <div className={`w-full flex flex-col ${isUser ? 'items-end' : 'items-start'} space-y-1`}>
@@ -69,10 +70,16 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
   };
 
   return (
-    // FIXED: Stripped all flex height locks, overflows, and absolute properties. 
-    // This is just a normal layout container that pushes the body height down!
-    <div className="w-full p-4 md:p-6 bg-transparent">
-      <div className="max-w-2xl mx-auto flex flex-col space-y-6">
+    /* 🔥 THE SCROLL FIX 🔥 
+       'absolute inset-0' perfectly fills the parent wrapper.
+       'overflow-y-auto' enables scrolling.
+       'overscroll-y-contain' ensures your swipe gestures stay inside this box and don't trigger browser reloads! 
+    */
+    <div 
+      ref={containerRef}
+      className="absolute inset-0 overflow-y-auto overscroll-y-contain p-4 md:p-6 scroll-smooth [scrollbar-width:thin]"
+    >
+      <div className="max-w-2xl mx-auto flex flex-col space-y-6 pb-6">
         
         {workspaceIsEmpty && (
           <div className="h-[40vh] flex flex-col justify-center items-center text-center space-y-2">
