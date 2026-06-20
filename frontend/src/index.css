@@ -1,11 +1,14 @@
 @import "tailwindcss";
 
+/* FIXED: Removed 'position: fixed' and 'touch-action' from the root. 
+  This allows Android to natively pass touch events to your scrollable canvas! 
+*/
 html, body, #root {
-  margin: 0 !important;
-  padding: 0 !important;
-  width: 100% !important;
-  height: 100dvh !important; /* FIXED: Use 100dvh globally */
-  max-height: 100dvh !important;
-  overflow: hidden !important;
-  background-color: #020617;
+  width: 100%;
+  height: 100%; /* Fallback */
+  height: 100dvh; /* Mobile viewport height */
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Prevents the 'pull-to-refresh' bounce on the main screen */
+  background-color: #020617; /* slate-950 */
 }
