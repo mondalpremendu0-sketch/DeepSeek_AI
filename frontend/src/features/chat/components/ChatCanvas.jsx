@@ -77,14 +77,15 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
   };
 
   return (
-    // FIXED: Changed overflow-y-auto to overflow-y-scroll to force a scrollbar context.
-    // ADDED: touch-pan-y (forces mobile to allow up/down swipes) and overscroll-y-contain (stops parent background from stealing the scroll).
+    // FIXED: Stripped out the forced touch-action and absolute classes.
+    // 'flex-1' takes remaining height, 'overflow-y-auto' creates the scrollbar natively.
     <div 
       ref={containerRef}
-      className="w-full flex-1 min-h-0 overflow-y-scroll overflow-x-hidden p-4 md:p-6 bg-slate-950 scroll-smooth touch-pan-y overscroll-y-contain [scrollbar-width:thin]"
+      className="w-full flex-1 overflow-y-auto p-4 md:p-6 bg-slate-950 scroll-smooth"
       style={{ WebkitOverflowScrolling: 'touch' }}
     >
-      <div className="max-w-2xl mx-auto flex flex-col space-y-6 pb-20 block">
+      {/* We use 'min-h-full' to ensure the inner content stretches properly to trigger scrollbars */}
+      <div className="max-w-2xl mx-auto flex flex-col space-y-6 pb-6 min-h-full">
         
         {workspaceIsEmpty && (
           <div className="h-[50vh] flex flex-col justify-center items-center text-center space-y-2">
@@ -119,6 +120,9 @@ export default function ChatCanvas({ messages, liveThinking, liveAnswer }) {
             isLive={true}
           />
         )}
+        
+        {/* Invisible spacer to ensure you can scroll slightly past the last message */}
+        <div className="h-4 w-full shrink-0"></div>
       </div>
     </div>
   );
