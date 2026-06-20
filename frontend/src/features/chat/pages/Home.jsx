@@ -11,16 +11,16 @@ export default function Home() {
   const { sessions, currentSessionId, messages, liveThinking, liveAnswer, isGenerating, createNewWorkspace, purgeWorkspace, dispatchPrompt } = useChatEngine();
 
   return (
-    // No more overflow-hidden or h-[100dvh] locks here. Just a min-height container.
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased">
+    // 'fixed inset-0' pins the app to the 4 corners of your screen
+    <div className="fixed inset-0 w-full h-full bg-slate-950 text-slate-100 font-sans antialiased flex flex-col">
       
       <Sidebar 
         sessions={sessions} currentSessionId={currentSessionId} createNewWorkspace={createNewWorkspace} 
         purgeWorkspace={purgeWorkspace} isGenerating={isGenerating} isOpen={mobileSidebarOpen} setIsOpen={setMobileSidebarOpen}
       />
 
-      {/* 1. FIXED HEADER (Pinned to the absolute top of the phone) */}
-      <header className="fixed top-0 left-0 right-0 h-14 border-b border-slate-800/60 bg-slate-900/90 backdrop-blur-md z-40 flex items-center justify-between px-4 md:px-6">
+      {/* HEADER: Fixed height, will not shrink */}
+      <header className="h-14 shrink-0 border-b border-slate-800/60 bg-slate-900/40 flex items-center justify-between px-4 md:px-6 z-20">
         <div className="flex items-center gap-3">
           <button onClick={() => setMobileSidebarOpen(true)} className="p-2 rounded-lg text-slate-400 hover:text-slate-100 bg-slate-900 border border-slate-800/80 md:hidden outline-none">
             <Menu size={16} />
@@ -32,14 +32,13 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 2. NATIVE SCROLLING MAIN AREA */}
-      {/* pt-14 pushes it below the header, pb-32 pushes it above the footer */}
-      <main className="pt-14 pb-32 w-full min-h-screen flex flex-col">
+      {/* CHAT AREA: Takes remaining space, relative positioning for the scrollable child */}
+      <main className="flex-1 min-h-0 w-full relative">
         <ChatCanvas messages={messages} liveThinking={liveThinking} liveAnswer={liveAnswer} />
       </main>
 
-      {/* 3. FIXED FOOTER (Pinned to the absolute bottom of the phone) */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-slate-950 border-t border-slate-800/60 shadow-[0_-10px_40px_rgba(2,6,23,0.8)]">
+      {/* FOOTER: Fixed at bottom, adjusts if text area grows */}
+      <div className="shrink-0 w-full z-20 bg-slate-950">
         <PromptInput dispatchPrompt={dispatchPrompt} isGenerating={isGenerating} />
       </div>
 
